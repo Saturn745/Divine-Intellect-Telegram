@@ -15,7 +15,7 @@ buildGo122Module {
   '';
   src = ./.;
   subPackages = ["."];
-  vendorHash = "sha256-pRWEZCTTUaIkCvjr1NJRlV1dmG2QuvBn+jRoLip8pWQ=";
+  vendorHash = "sha256-stU0K+/69YmgLgHi/+X1NGphVbg44XYhJ9cVK1fYuZ4=";
   meta = with lib; {
     mainProgram = "Divine-Intellect";
     platforms = platforms.linux;
