@@ -1,9 +1,7 @@
 when:
-  event:
-    - push:
-        branches:
-          - main
-
+  event: [push]
+  branch: [main]
+  
 steps:
   build:
     image: nixos/nix
