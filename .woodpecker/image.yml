@@ -1,0 +1,10 @@
+when:
+  event: [push]
+
+steps:
+  build:
+    image: nixos/nix
+    commands:
+      - nix build .#image --extra-experimental-features nix-command --extra-experimental-features flakes
+      - nix-shell -p skopeo --command "echo $CODEBERG_PKG_TOKEN | skopeo login -u Saturn745 --password-stdin codeberg.org && skopeo --insecure-policy copy docker-archive:./result docker://codeberg.org/saturn745/divine-intellect-telegram:latest"
+    secrets: [ codeberg_pkg_token ]
