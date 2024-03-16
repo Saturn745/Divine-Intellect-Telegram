@@ -14,7 +14,7 @@ func HelloHandler(ctx telebot.Context) error {
 	return nil
 }
 
-func (m *Hello) Init() *Data {
+func (m *Hello) Init(_ *telebot.Bot) *Data {
 	// Return a slice of commands
 	return &Data{
 		Commands: &[]Command{

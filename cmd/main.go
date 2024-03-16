@@ -13,12 +13,13 @@ import (
 var registeredModules = []modules.Module{
 	&modules.Hello{},
 	&modules.Downloader{},
+	&modules.Compress{},
 }
 
 func loadModules(b *tele.Bot) {
 	for _, module := range registeredModules {
 		// Get the commands from the module
-		data := module.Init()
+		data := module.Init(b)
 		if data == nil {
 			continue
 		}

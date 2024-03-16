@@ -22,5 +22,5 @@ type Data struct {
 }
 type Module interface {
 	// A func that returns a slice of commands
-	Init() *Data
+	Init(*telebot.Bot) *Data
 }

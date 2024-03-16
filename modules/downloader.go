@@ -59,7 +59,7 @@ func AutoDownloadHandler(ctx telebot.Context) error {
 	return nil
 }
 
-func (m *Downloader) Init() *Data {
+func (m *Downloader) Init(_ *telebot.Bot) *Data {
 	return &Data{
 		Commands: &[]Command{
 			{
