@@ -1,5 +1,8 @@
 when:
-  event: [push]
+  event:
+    - push:
+        branches:
+          - main
 
 steps:
   build:
