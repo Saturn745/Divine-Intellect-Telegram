@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/charmbracelet/log v0.3.1
-	github.com/wader/goutubedl v0.0.0-20240113171134-01bac34c4c02
+	github.com/wader/goutubedl v0.0.0-20240314083254-04eb47cbe876
 	gopkg.in/telebot.v3 v3.2.1
 )
 
