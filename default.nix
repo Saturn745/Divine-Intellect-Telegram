@@ -6,7 +6,13 @@
 buildGo122Module {
   pname = "divine";
   version = "v0.0.1";
-  buildInputs = [pkgs.yt-dlp pkgs.ffmpeg];
+  buildInputs = [pkgs.makeWrapper];
+  postFixup = ''
+    wrapProgram $out/bin/Divine-Intellect --set PATH ${lib.makeBinPath [
+      pkgs.youtube-dl
+      pkgs.ffmpeg
+    ]}
+  '';
   src = ./.;
   subPackages = ["."];
   vendorHash = "sha256-pRWEZCTTUaIkCvjr1NJRlV1dmG2QuvBn+jRoLip8pWQ=";
