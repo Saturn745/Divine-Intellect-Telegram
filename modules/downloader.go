@@ -18,6 +18,7 @@ var urls = []string{
 	"https://media.discordapp.net",
 	"https://images-ext-1.discordapp.net",
 	"https://tiktok.com",
+	"https://www.tiktok.com",
 }
 
 func download(ctx telebot.Context, url string) {
