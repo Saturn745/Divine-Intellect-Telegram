@@ -9,7 +9,7 @@ buildGo122Module {
   buildInputs = [pkgs.makeWrapper];
   postFixup = ''
     wrapProgram $out/bin/Divine-Intellect --set PATH ${lib.makeBinPath [
-      pkgs.youtube-dl
+      pkgs.yt-dlp
       pkgs.ffmpeg
     ]}
   '';
