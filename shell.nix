@@ -1,7 +1,7 @@
 {pkgs ? import <nixpkgs> {}}: let
   run = pkgs.writeScriptBin "run" ''
         #!${pkgs.bash}/bin/bash
-    TOKEN="A" ${pkgs.go}/bin/go run cmd/main.go
+    ${pkgs.go}/bin/go run divine.go
   '';
 in
   pkgs.mkShell {

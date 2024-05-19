@@ -14,6 +14,7 @@ var registeredModules = []modules.Module{
 	&modules.Hello{},
 	&modules.Downloader{},
 	&modules.Compress{},
+	&modules.Carny{},
 }
 
 func loadModules(b *tele.Bot) {

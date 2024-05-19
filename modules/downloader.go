@@ -5,6 +5,7 @@ import (
 
 	"gopkg.in/telebot.v3"
 
+	"github.com/charmbracelet/log"
 	"github.com/wader/goutubedl"
 )
 
@@ -21,8 +22,21 @@ var urls = []string{
 	"https://www.tiktok.com",
 }
 
+type LogPrinter struct {
+	goutubedl.Printer
+}
+
+func (p *LogPrinter) Print(args ...interface{}) {
+	log.Debug(args)
+}
+
+// Create a map with a key string and a value of a bool (always true) to be used as a set of blacklistedExtensions
+var blacklistedExtensions = map[string]bool{
+	".gif": true,
+}
+
 func download(ctx telebot.Context, url string) {
-	result, err := goutubedl.New(context.Background(), url, goutubedl.Options{})
+	result, err := goutubedl.New(context.Background(), url, goutubedl.Options{DebugLog: &LogPrinter{}})
 	ctx.Reply("Downloading: " + result.Info.Title)
 	if err != nil {
 		ctx.Reply("Error: " + err.Error())
@@ -33,7 +47,8 @@ func download(ctx telebot.Context, url string) {
 		ctx.Reply("Error: " + err.Error())
 		return
 	}
-	ctx.Reply("Uploading: " + result.Info.Title)
+
+	defer downloadResult.Close()
 	file := &telebot.Video{File: telebot.FromReader(downloadResult), FileName: result.Info.Title + ".mp4"}
 	ctx.Reply(file)
 }
@@ -53,6 +68,12 @@ func AutoDownloadHandler(ctx telebot.Context) error {
 	for _, url := range urls {
 		// If the message starts with the url
 		if len(ctx.Text()) >= len(url) && ctx.Text()[:len(url)] == url {
+			// If the message ends with a blacklisted extension
+			for ext := range blacklistedExtensions {
+				if len(ctx.Text()) >= len(ext) && ctx.Text()[len(ctx.Text())-len(ext):] == ext {
+					return nil
+				}
+			}
 			download(ctx, ctx.Text())
 			return nil
 		}
