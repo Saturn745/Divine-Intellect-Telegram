@@ -15,5 +15,6 @@ jobs:
     - uses: cachix/install-nix-action@v27
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
+        nix_path: nixpkgs=channel:nixos-unstable
     - run: nix build .#image --extra-experimental-features nix-command --extra-experimental-features flakes
     - run: nix-shell -p skopeo --command "echo ${{ secrets.GITHUB_TOKEN }} | skopeo login -u ${{ github.actor }} --password-stdin ghcr.io && skopeo --insecure-policy copy docker-archive:./result docker://ghcr.io/saturn745/divine-intellect-telegram:latest"
