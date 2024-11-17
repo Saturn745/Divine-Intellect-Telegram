@@ -21,7 +21,7 @@ var (
 	alwaysCompressExtensions = []string{".mkv", ".webm"} // These will always be compressed regardless of size due to them not embedding on telegram
 )
 
-func generateRandomString(length int) string {
+func GenerateRandomString(length int) string {
 	// Make a string of all the characters
 	characters := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
@@ -109,7 +109,7 @@ func CompressHandler(b *telebot.Bot) func(ctx telebot.Context) error {
 		log.Infof("File: %s: Downloading... | File Size: %v", fileName, rawFileSize)
 
 		// Download the file
-		tempName := generateRandomString(10)
+		tempName := GenerateRandomString(10)
 		if isVideo {
 			err = b.Download(&video.File, "/tmp/"+tempName)
 		} else {
@@ -148,8 +148,16 @@ func CompressHandler(b *telebot.Bot) func(ctx telebot.Context) error {
 		percentage := (float64(rawFileSize-newFile.Size()) / float64(rawFileSize)) * 100
 
 		log.Infof("File: %s: Compressed by %.2f%% | New File Size: %v", fileName, percentage, newFile.Size())
+		// If the percentage is negative, the file was larger than the original so just exit here
+		if percentage < 0 {
+			return nil
+		}
 
-		err = ctx.Reply(&telebot.Video{File: telebot.FromDisk("/tmp/" + compressedFileName), Caption: fmt.Sprintf("Compressed by %.2f%%\n\nOriginal: %s\n\nNew: %s", percentage, humanize.Bytes(uint64(rawFileSize)), humanize.Bytes(uint64(newFile.Size()))), FileName: tempName + ".mp4"})
+		deleteOriginalButton := telebot.InlineButton{Text: "👍Delete Original", Unique: "delete_original"}
+		deleteCompressedButton := telebot.InlineButton{Text: "🐒Delete Compressed", Unique: "delete_compressed"}
+		markup := telebot.ReplyMarkup{InlineKeyboard: [][]telebot.InlineButton{{deleteCompressedButton, deleteOriginalButton}}}
+
+		err = ctx.Reply(&telebot.Video{File: telebot.FromDisk("/tmp/" + compressedFileName), Caption: fmt.Sprintf("Compressed by %.2f%%\n\nOriginal: %s\n\nNew: %s", percentage, humanize.Bytes(uint64(rawFileSize)), humanize.Bytes(uint64(newFile.Size()))), FileName: tempName + ".mp4"}, &markup)
 		if err != nil {
 			log.Error(err.Error())
 		}
@@ -176,6 +184,38 @@ func CompressHandler(b *telebot.Bot) func(ctx telebot.Context) error {
 	}
 }
 
+func HandleDeleteOriginalButton(b *telebot.Bot) func(ctx telebot.Context) error {
+	return func(ctx telebot.Context) error {
+		// Check if the message is a reply
+		if !ctx.Message().IsReply() {
+			log.Warnf("Message %v is not a reply", ctx.Message().ID)
+			ctx.Reply("This message is not a reply. How did this even happen?")
+			return nil
+		}
+
+		// Delete the original message
+		err := b.Delete(ctx.Message().ReplyTo)
+		if err != nil {
+			log.Error(err.Error())
+			ctx.Reply("Error: " + err.Error())
+
+		}
+		return nil
+	}
+}
+
+func HandleDeleteCompressedButton(b *telebot.Bot) func(ctx telebot.Context) error {
+	return func(ctx telebot.Context) error {
+		// Delete the compressed message
+		err := b.Delete(ctx.Message())
+		if err != nil {
+			log.Error(err.Error())
+			ctx.Reply("Error: " + err.Error())
+		}
+		return nil
+	}
+}
+
 func (m *Compress) Init(b *telebot.Bot) *Data {
 	return &Data{
 		Commands: &[]Command{
@@ -186,6 +226,14 @@ func (m *Compress) Init(b *telebot.Bot) *Data {
 			{
 				Name:    telebot.OnDocument,
 				Handler: CompressHandler(b),
+			},
+			{
+				Name:    &telebot.InlineButton{Unique: "delete_original"},
+				Handler: HandleDeleteOriginalButton(b),
+			},
+			{
+				Name:    &telebot.InlineButton{Unique: "delete_compressed"},
+				Handler: HandleDeleteCompressedButton(b),
 			},
 		},
 	}
