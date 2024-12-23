@@ -20,6 +20,8 @@ var urls = []string{
 	"https://images-ext-1.discordapp.net",
 	"https://tiktok.com",
 	"https://www.tiktok.com",
+    "https://www.youtube.com/shorts/",
+    "https://youtube.com/shorts/",
 }
 
 type LogPrinter struct {
