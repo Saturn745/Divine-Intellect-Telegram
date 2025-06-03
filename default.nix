@@ -1,9 +1,9 @@
 {
   pkgs,
   lib,
-  buildGo122Module,
+  buildGo124Module,
 }:
-buildGo122Module {
+buildGo124Module {
   pname = "divine";
   version = "v0.0.1";
   buildInputs = [pkgs.makeWrapper];
